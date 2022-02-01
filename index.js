@@ -16,7 +16,7 @@ Usage: serialog \\
   --dev-path=/dev/ttyUSB0 \\        # Path to input device
   --dev-baud=115200 \\              # Baudrate
   --log-path="~/my_device.log" \\   # Path to output file
-  --log-append                 \    # Append to file, instead of overwriting
+  --log-append                 \    # Append to file, instead of overwriting (default)
   `);
   process.exit(0);
 }
@@ -62,7 +62,7 @@ const serialPort = new SerialPort(devPath, {
     console.log(`Logging ${devPath}@${devBaud} → ${logPath}`);
     const readLine = serialPort.pipe(new Readline())
     readLine.on('data', line => {
-      const lineFormatted = `${new Date().toISOString()} ${line}\n`;
+      const lineFormatted = `[${new Date().toISOString()}] ${line}\n`;
 
       // Write to console
       process.stdout.write(lineFormatted);
