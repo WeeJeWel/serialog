@@ -18,4 +18,10 @@ serialog \
   --log-append                     # Append to file, instead of overwriting
   ```
 
-> Use in combination with [PM2](https://pm2.keymetrics.io) to keep monitoring for extended periods of times.
+### Usage with PM2
+
+Use serialog in combination with [PM2](https://pm2.keymetrics.io) to keep monitoring while detaching your SSH session.
+
+```bash
+pm2 start serialog -- --dev-path=/dev/ttyUSB0 --dev-baud=115200 --log-path=/home/pi/my_device.log --log-append
+```
