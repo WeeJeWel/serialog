@@ -24,7 +24,7 @@ Usage: serialog \\
 let {
   'dev-path': devPath,
   'dev-baud': devBaud = 115200,
-  'log-path': logPath = 'serialog.log',
+  'log-path': logPath = null,
   'log-append': logAppend = false,
 } = ArgsParser(process.argv);
 
@@ -36,24 +36,23 @@ if (!devBaud || typeof devBaud !== 'number') {
   throw new Error('Missing --dev-baud');
 }
 
-if (!logPath || typeof logPath !== 'string') {
-  throw new Error('Missing --log-path');
-}
-
 if (typeof logAppend !== 'boolean') {
   throw new Error('Invalid --log-append');
 }
 
 // Replace ~/ with home dir
-if (logPath.startsWith('~/')) {
+if (logPath && logPath.startsWith('~/')) {
   logPath = path.join(process.env.HOME, logPath.substring(2));
 }
 
-const writeStream = fs.createWriteStream(logPath, {
-  flags: logAppend
-    ? 'a' // append
-    : 'w' // overwrite
-});
+let logPathWriteStream;
+if (logPath) {
+  logPathWriteStream = fs.createWriteStream(logPath, {
+    flags: logAppend
+      ? 'a' // append
+      : 'w' // overwrite
+  });
+}
 
 const serialPort = new SerialPort(devPath, {
   baudRate: devBaud,
@@ -68,7 +67,9 @@ const serialPort = new SerialPort(devPath, {
       process.stdout.write(lineFormatted);
 
       // Write to file
-      writeStream.write(lineFormatted);
+      if (logPathWriteStream) {
+        logPathWriteStream.write(lineFormatted);
+      }
     });
   })
   .once('error', err => {
