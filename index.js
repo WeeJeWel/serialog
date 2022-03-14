@@ -58,7 +58,7 @@ const serialPort = new SerialPort(devPath, {
   baudRate: devBaud,
 })
   .once('open', () => {
-    console.log(`Logging ${devPath}@${devBaud} → ${logPath}`);
+    console.log(`Logging ${devPath}@${devBaud} → ${logPath || 'stdout'}`);
     const readLine = serialPort.pipe(new Readline())
     readLine.on('data', line => {
       const lineFormatted = `[${new Date().toISOString()}] ${line}\n`;
